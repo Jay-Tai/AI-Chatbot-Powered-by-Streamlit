@@ -1,27 +1,39 @@
 #Importing modules/packages
 import streamlit as st
-from langchain_ollama import OllamaLLM
-from langchain_core.prompts import ChatPromptTemplate
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
-client = OpenAI()
-
-# Setup message history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-#Setup message history
-
-
-#Setup/Page config
+# Setup/Page config
 st.set_page_config(
     page_title="AI Chatbot (By Jay Tailor)",
     page_icon="🔥",
     layout="wide"
 )
+
+# Ask for OpenAI key at the beginning
+if "openai_key" not in st.session_state:
+    st.title("🔑 OpenAI API Key Required")
+    st.write("Please enter your OpenAI API key to continue:")
+    
+    api_key = st.text_input("OpenAI API Key:", type="password", placeholder="sk-...")
+    
+    if st.button("Submit API Key"):
+        if api_key.startswith("sk-"):
+            st.session_state.openai_key = api_key
+            st.success("API key saved! Refreshing...")
+            st.rerun()
+        else:
+            st.error("Please enter a valid OpenAI API key (should start with 'sk-')")
+    
+    st.stop()  # Stop execution until key is provided
+
+# Initialize OpenAI client with the saved key
+client = OpenAI(api_key=st.session_state.openai_key)
+
+# Setup message history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
 #Main page
 st.markdown('<h1 style="text-align: center;">An AI Chatbot.</h1>', unsafe_allow_html=True)
@@ -44,13 +56,17 @@ for msg in st.session_state.messages:
 prompt = st.chat_input("Ask me anything...")
 
 if prompt:
+
     # Save and display user message
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
-        st.markdown(prompt)
+        st.markdown(prompt)  # Show original user input
+    
+    # Send to OpenAI with the enhanced prompt
     response = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=st.session_state.messages)
+        model="gpt-3.5-turbo",
+        messages=st.session_state.messages
+    )
 
     bot_reply = response.choices[0].message.content
 
@@ -58,7 +74,6 @@ if prompt:
 
     with st.chat_message("assistant"):
         st.markdown(bot_reply)
-
 
 #Sidebar
 with st.sidebar:
@@ -73,7 +88,7 @@ with st.sidebar:
         st.markdown("- Talk to the bot naturally! The bot will understand your context.") #TIP 1
         st.markdown("---")
         st.header("🛠️ Technical info") #TECHNICAL INFO (Make it the 2nd topic)
-        st.markdown("- **Model:** OpenAI GPT 3.5 Turbo") #RESOURCE 1
+        st.markdown("- **Model:** OpenAI GPT (Insert here later)") #RESOURCE 1
         st.markdown("- **Framework:** Streamlit + OpenAI") #RESOURCE 2
         st.markdown("- Made by Jay Tailor")
 #------------------PROJECT PAGE BUTTON------------------
