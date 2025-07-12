@@ -88,11 +88,12 @@ with st.sidebar:
         st.markdown("- Talk to the bot naturally! The bot will understand your context.") #TIP 1
         st.markdown("---")
         st.header("🛠️ Technical info") #TECHNICAL INFO (Make it the 2nd topic)
-        st.markdown("- **Model:** OpenAI GPT (Insert here later)") #RESOURCE 1
+        st.markdown("- **Model:** OpenAI GPT 3.5 Turbo") #RESOURCE 1
         st.markdown("- **Framework:** Streamlit + OpenAI") #RESOURCE 2
         st.markdown("- Made by Jay Tailor")
 #------------------PROJECT PAGE BUTTON------------------
-        st.button("See the project page!")
+        if st.button("See the project page!"):
+            st.markdown("Coming soon. Still working on it!")
         
 #TEXT SIZE ELEMENTS
 #with st.sidebar:
